@@ -10,6 +10,8 @@ enum  direction { FORWARD, REVERSE };
 
 #define PIXEL_COUNT 1
 
+const int POT_PIN = 0;
+
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(PIXEL_COUNT, PIXEL_PIN, NEO_GRB + NEO_KHZ800);
 class NeoPatterns : public Adafruit_NeoPixel
 {
@@ -141,6 +143,9 @@ class NeoPatterns : public Adafruit_NeoPixel
 
 NeoPatterns Strip(PIXEL_COUNT, PIXEL_PIN, NEO_GRB + NEO_KHZ800);
 
+int sensorValue = 0;
+int outputValue = 0;
+
 bool oldState = HIGH;
 int showType = 0;
 
@@ -148,7 +153,6 @@ void setup() {
   pinMode(BUTTON_PIN, INPUT_PULLUP);
   Strip.begin();
   Strip.ColorWipe((0,0,0), 0);
-  Strip.setBrightness(255);
   Serial.begin(9600);
 }
 
@@ -165,6 +169,12 @@ void loop() {
       startShow(showType);
     }
   }
+
+  sensorValue = analogRead(A0);
+outputValue = map(sensorValue, 0, 1023, 0, 255);
+
+  strip.setBrightness(outputValue);                // Set LED brightness 0-255
+
   oldState = newState;
   Strip.Update();
 }
